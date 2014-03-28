@@ -1,0 +1,33 @@
+{
+  "name": "genr",
+  "bin": {
+    "genr": "bin/genr"
+  },
+  "version": "0.1.0",
+  "description": "A project generator",
+  "main": "index.js",
+  "repository": "https://github.com/mndvns/genr.git",
+  "keywords": [
+    "project",
+    "initialize"
+  ],
+  "author": "Michael Andrew Vanasse <mail@mndvns.com>",
+  "devDependencies": {
+    "mocha": "*",
+    "should": "*",
+    "debug": "*"
+  },
+  "scripts": {
+    "test": "mocha test/*.js"
+  },
+  "license": "MIT",
+  "dependencies": {
+    "metalsmith": "^0.5.0",
+    "async": "^0.2.10",
+    "cli-prompt": "^0.3.2",
+    "consolidate": "^0.10.0",
+    "handlebars": "^2.0.0-alpha.2",
+    "js-yaml": "^3.0.2",
+    "fs-extra": "^0.8.1"
+  }
+}

@@ -5,7 +5,7 @@
 
 ## Installation
 
-    $ npm install mndvns/genr
+    $ npm install -g genr
 
 ## License
 

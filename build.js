@@ -1,6 +1,6 @@
 
 /**
- * Module dependencies
+ * Module dependencies.
  */
 
 var debug = require('debug')('genr:build');
@@ -21,12 +21,10 @@ var metalsmith = Metalsmith(__dirname)
   .use(ask)
   .use(template)
 
-
-
 metalsmith.build(function(err){
     if (err) throw err;
-    console.log(metalsmith);
-    console.log(metalsmith.__proto__);
+    // console.log(metalsmith);
+    // console.log(metalsmith.__proto__);
   });
 
 /**
@@ -38,17 +36,42 @@ metalsmith.build(function(err){
  */
 
 function ask(files, metalsmith, done){
-  var prompts = ['description'];
   var metadata = metalsmith.metadata();
 
-  async.eachSeries(prompts, run, done);
+  getConfig(metadata, function(err, data){
+    var prompts = loadPrompt(data);
 
-  function run(key, done){
-    prompt('  ' + key + ': ', function(val){
-      metadata[key] = val;
-      done();
-    });
-  }
+    // ascii helper fns
+    var last = prompts[prompts.length - 1];
+    var maxw = prompts.sort(function(a,b){ return b.length - a.length })[0].length;
+    var padw = function(s){ return Array(maxw - s.length + 2).join(' ') };
+
+    // pretty print
+    var prnt = function prnt(str){
+      return [
+        padw(str),
+        escc('30m', str),
+        escc('0m'),
+        ' : ',
+      ].join('');
+    }
+
+    // clear screen and position
+    write('2J');
+    write('2;H');
+
+    // run prompts
+    async.eachSeries(prompts, run, done);
+
+    function run(key, done){
+      prompt(prnt(key), function(val){
+        if (key == last) console.log();
+        metadata[key] = val;
+        done();
+      });
+    }
+  });
+
 }
 
 /**
@@ -109,6 +132,9 @@ function getConfig(metadata, done){
 /**
  * Create context with config
  * data.
+ *
+ * @param {Object} data
+ * @param {Function} done
  */
 
 function createContext(data, done){
@@ -135,12 +161,17 @@ function createContext(data, done){
 
 /**
  * Read config file.
+ *
+ * @param {String} path
+ * @param {Function} done
  * @api private
  */
 
 function readConfig(path, done){
   fs.readFile(path, {encoding: 'utf8'}, function(err, data){
     if (err) return done(err);
+    // TODO
+    // FIX MEEEEEEEEEaaaah, just kidding. could you imagine?
     try {data = yaml.safeLoad(data)} catch(e) {
       try {data = JSON.parse(data)} catch(e) {
         return done('Config file must be YAML or JSON');
@@ -151,6 +182,30 @@ function readConfig(path, done){
 }
 
 /**
+ * Parse config keys and return array
+ * of prompt questions.
+ *
+ * @param {Object} data
+ * @return {Array} buf
+ * @api private
+ */
+
+function loadPrompt(data){
+  var buf = [];
+  var key;
+  var val;
+  for (key in data) {
+    if (key.slice(-1) !== '?') continue;
+    val = data[key];
+    key = key.slice(0, -1);
+    buf.push(key);
+  }
+
+  return buf;
+}
+
+
+/**
  * Merge two objects.
  * @api private
  */
@@ -159,3 +214,28 @@ function merge(a, b){
   for (var k in b) a[k] = b[k];
   return a;
 }
+
+
+/**
+ * ASCII escape code helper.
+ *
+ * @param {String} code
+ * @param {String} str
+ * @api private
+ */
+
+function escc(code, str){
+  return '\u001B[' + code + (str || '');
+};
+
+
+/**
+ * Stdout helper.
+ *
+ * @param {String} str
+ * @api private
+ */
+
+function write(str){
+  return process.stdout.write(escc(str));
+};

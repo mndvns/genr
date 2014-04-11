@@ -15,7 +15,8 @@
   "devDependencies": {
     "mocha": "*",
     "should": "*",
-    "debug": "*"
+    "debug": "*",
+    "suppose": "^0.3.0"
   },
   "scripts": {
     "test": "mocha test/*.js"

@@ -4,6 +4,18 @@
  * Module dependencies
  */
 
-var builder = require('../build.js');
+var debug = require('debug')('genr:bin');
+var program = require('commander');
+var rc = require('rc');
 
+// cli
+program
+  .version(require('../package.json').version)
+  .option('-d, --dir', 'abcd', process.cwd())
+  .option('-D, --debug', 'debugger')
 
+program.parse(process.argv);
+
+var args = program.args;
+var conf = rc('genr', args);
+var builder = require('../build.js')(conf.dir, conf);

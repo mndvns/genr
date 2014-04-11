@@ -1,4 +1,3 @@
-
 # genr
 
   A project generator

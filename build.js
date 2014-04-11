@@ -17,15 +17,21 @@ var vm = require('vm');
  * Build.
  */
 
-var metalsmith = Metalsmith(__dirname)
-  .use(ask)
-  .use(template)
+module.exports = Builder;
 
-metalsmith.build(function(err){
-    if (err) throw err;
-    // console.log(metalsmith);
-    // console.log(metalsmith.__proto__);
-  });
+function Builder(dir, options){
+  if (!(this instanceof Builder))
+    return new Builder(dir, options);
+  Metalsmith.call(this, __dirname);
+  this.use(ask)
+  this.use(template)
+  this.build(function(err){
+      if (err) throw(err)
+      console.log('done');
+    });
+};
+
+require('util').inherits(Builder, Metalsmith);
 
 /**
  * Prompt plugin.
@@ -111,7 +117,7 @@ function template(files, metalsmith, done){
 function getConfig(metadata, done){
   // TODO
   // this thing sucks
-  var path = process.env.HOME + '/.config/project';
+  var path = process.env.HOME + '/.config/genr';
   fs.exists(path, function(ex){
     if (!ex) return done('No config found at %s', path);
     fs.readdir(path, function(err, data){

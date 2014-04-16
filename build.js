@@ -8,6 +8,7 @@ var async = require('async');
 var Metalsmith = require('metalsmith');
 var prompt = require('cli-prompt');
 var render = require('consolidate').handlebars.render;
+var exec = require('child_process').exec;
 var path = require('path');
 var yaml = require('js-yaml');
 var fs = require('fs-extra');
@@ -26,9 +27,12 @@ function Builder(dir, options){
   this.use(ask)
   this.use(template)
   this.build(function(err){
-      if (err) throw(err)
-      console.log('done');
+    if (err) return console.error(err);
+    install(function(err){
+      if (err) return console.error(err);
+      process.stdout.write('\u001B[30m\n  Done. \u001B[0m\n\n');
     });
+  })
 };
 
 require('util').inherits(Builder, Metalsmith);
@@ -245,3 +249,18 @@ function escc(code, str){
 function write(str){
   return process.stdout.write(escc(str));
 };
+
+/**
+ * Execute default installs.
+ *
+ * @param {Function} fn
+ */
+
+function install(fn){
+  fs.exists('package.json', function(ex){
+    if (ex) {
+      process.stdout.write('\u001B[30m\n  Running `npm install`...');
+      exec('npm install --dev', fn)
+    }
+  });
+}

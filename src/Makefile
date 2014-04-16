@@ -1,5 +1,7 @@
 
-test:
-	@mocha -w
+{{#if tests}}test:
+	@{{#if debug}}DEBUG={{name}}* {{/if}}mocha \
+	  --watch \
+	  --bail{{/if}}
 
-.PHONY: test
+.PHONY: {{#if tests}}test{{/if}}

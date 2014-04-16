@@ -1,11 +1,14 @@
 {
   "name": "{{name}}",
+  {{#if bin}}"bin": { "{{name}}": "bin/cmd" },{{/if}}
   "description": "{{description}}",
   "repository": "git://github.com/{{repo}}.git <{{email}}>",
   "version": "0.0.0",
   "license": "{{license}}",
-  "main": "lib/index.js",
-  "dependencies": {},
+  "main": "index.js",
+  "dependencies": {
+    {{#if bin}}"commander": "*"{{/if}}
+  },
   "devDependencies": {
     {{#if tests}}"mocha": "*",
     "should": "*"{{/if}}{{#if debug}},
